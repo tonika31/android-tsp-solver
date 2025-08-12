@@ -1,0 +1,16 @@
+<resources>
+    <!-- Screen-wide padding -->
+    <dimen name="activity_padding">16dp</dimen>
+
+    <!-- Vertical space between distance cards -->
+    <dimen name="card_margin_vertical">8dp</dimen>
+
+    <!-- Inner padding for each card’s content -->
+    <dimen name="card_content_padding">12dp</dimen>
+
+    <!-- Width of the distance input field -->
+    <dimen name="input_width">80dp</dimen>
+
+    <!-- Elevation for MaterialCardView -->
+    <dimen name="card_elevation">2dp</dimen>
+</resources>

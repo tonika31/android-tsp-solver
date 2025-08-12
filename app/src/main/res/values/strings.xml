@@ -1,0 +1,21 @@
+<resources>
+    <!-- App identity -->
+    <string name="app_name">TSP Solver</string>
+
+    <!-- Main screen text -->
+    <string name="instruction">
+        Enter distances for each city pair (symmetric)
+    </string>
+    <string name="city_count_hint">Number of Cities</string>
+    <string name="solve">Solve TSP</string>
+    <string name="error_fill">Please fill all distances</string>
+    <string name="result_placeholder">Result will appear here</string>
+
+    <!-- Formatted result with route and distance -->
+    <string name="result_route_format">
+        Tour: %1$s\nDistance: %2$d
+    </string>
+
+    <!-- Label for each distance input -->
+    <string name="distance_label">Distance %1$d ↔ %2$d</string>
+</resources>
