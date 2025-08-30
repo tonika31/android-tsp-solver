@@ -18,39 +18,45 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.List;
 
+// Main activity for the TSP app
 public class MainActivity extends AppCompatActivity {
+    // UI components
     private LinearLayout pairsContainer;
     private MaterialButton solveButton;
     private TextView resultText;
     private AutoCompleteTextView cityCountDropdown;
 
-    private int cityCount = 4;  // default
-    private final List<Pair<Integer,Integer>> pairs = new ArrayList<>();
-    private final List<TextInputEditText> inputs = new ArrayList<>();
+    // State variables
+    private int cityCount = 4;  // default city count
+    private final List<Pair<Integer,Integer>> pairs = new ArrayList<>(); // city pairs
+    private final List<TextInputEditText> inputs = new ArrayList<>();    // input fields
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize UI components
         pairsContainer      = findViewById(R.id.pairsContainer);
         solveButton         = findViewById(R.id.solveButton);
         resultText          = findViewById(R.id.resultText);
         cityCountDropdown   = findViewById(R.id.cityCountDropdown);
 
-        setupCityCountDropdown();
-        generatePairInputs(cityCount);
+        setupCityCountDropdown();      // Setup dropdown for city count
+        generatePairInputs(cityCount); // Generate input fields for distances
 
+        // Set up button click to solve TSP
         solveButton.setOnClickListener(v -> {
             if (!validateInputs()) {
-                resultText.setText("Please fill all distances");
+                resultText.setText("Please fill all distances (Km)");
                 return;
             }
-            int[][] matrix = buildSymmetricMatrix();
-            new SolveTspTask().execute(matrix);
+            int[][] matrix = buildSymmetricMatrix(); // Build distance matrix
+            new SolveTspTask().execute(matrix);      // Solve TSP asynchronously
         });
     }
 
+    // Sets up the dropdown for selecting city count
     private void setupCityCountDropdown() {
         // Only allow 4, 5, or 6 cities
         String[] counts = { "4", "5", "6" };
@@ -62,13 +68,14 @@ public class MainActivity extends AppCompatActivity {
 
         cityCountDropdown.setAdapter(adapter);
 
-        // Set default to 4 (or whatever you prefer)
+        // Set default to 4
         cityCount = 4;
         cityCountDropdown.setText(String.valueOf(cityCount), false);
 
         // Prevent manual typing—only selection
         cityCountDropdown.setKeyListener(null);
 
+        // Regenerate input fields when city count changes
         cityCountDropdown.setOnItemClickListener((parent, view, pos, id) -> {
             cityCount = Integer.parseInt(counts[pos]);
             pairsContainer.removeAllViews();
@@ -78,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Generates input fields for all city pairs
     private void generatePairInputs(int n) {
         LayoutInflater inflater = LayoutInflater.from(this);
         for (int i = 0; i < n; i++) {
@@ -89,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                         false);
 
                 TextView label = row.findViewById(R.id.labelText);
-                label.setText(String.format("Distance City: %d ↔ %d", i, j));
+                label.setText(String.format("Distance City (km) : %d ↔ %d", i, j));
 
                 TextInputEditText input =
                         row.findViewById(R.id.distanceInput);
@@ -100,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Validates that all input fields are filled
     private boolean validateInputs() {
         for (TextInputEditText et : inputs) {
             if (et.getText() == null ||
@@ -110,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    // Builds a symmetric distance matrix from user inputs
     private int[][] buildSymmetricMatrix() {
         int n = cityCount;
         int[][] matrix = new int[n][n];
@@ -125,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         return matrix;
     }
 
+    // AsyncTask to solve TSP in the background
     private class SolveTspTask
             extends AsyncTask<int[][],Void,Pair<List<Integer>,Integer>> {
 
