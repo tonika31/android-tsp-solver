@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     // State variables
     private int cityCount = 4;  // default city count
-    private final List<Pair<Integer,Integer>> pairs = new ArrayList<>(); // city pairs
+    private final List<Pair<Integer, Integer>> pairs = new ArrayList<>(); // city pairs
     private final List<TextInputEditText> inputs = new ArrayList<>();    // input fields
 
     @Override
@@ -37,10 +37,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Initialize UI components
-        pairsContainer      = findViewById(R.id.pairsContainer);
-        solveButton         = findViewById(R.id.solveButton);
-        resultText          = findViewById(R.id.resultText);
-        cityCountDropdown   = findViewById(R.id.cityCountDropdown);
+        pairsContainer = findViewById(R.id.pairsContainer);
+        solveButton = findViewById(R.id.solveButton);
+        resultText = findViewById(R.id.resultText);
+        cityCountDropdown = findViewById(R.id.cityCountDropdown);
 
         setupCityCountDropdown();      // Setup dropdown for city count
         generatePairInputs(cityCount); // Generate input fields for distances
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     // Sets up the dropdown for selecting city count
     private void setupCityCountDropdown() {
         // Only allow 4, 5, or 6 cities
-        String[] counts = { "4", "5", "6" };
+        String[] counts = {"4", "5", "6"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_dropdown_item_1line,
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < n; i++) matrix[i][i] = 0;
 
         for (int idx = 0; idx < pairs.size(); idx++) {
-            Pair<Integer,Integer> p = pairs.get(idx);
+            Pair<Integer, Integer> p = pairs.get(idx);
             int d = Integer.parseInt(inputs.get(idx)
                     .getText().toString());
             matrix[p.first][p.second] = d;
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
     // AsyncTask to solve TSP in the background
     private class SolveTspTask
-            extends AsyncTask<int[][],Void,Pair<List<Integer>,Integer>> {
+            extends AsyncTask<int[][], Void, Pair<List<Integer>, Integer>> {
 
         @Override
         protected void onPreExecute() {
@@ -145,20 +145,37 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Pair<List<Integer>,Integer> doInBackground(
+        protected Pair<List<Integer>, Integer> doInBackground(
                 int[][]... params) {
             return TspBacktrackingSolver.solve(params[0]);
         }
 
         @Override
-        protected void onPostExecute(
-                Pair<List<Integer>,Integer> result) {
+        protected void onPostExecute(Pair<List<Integer>, Integer> result) {
+            // Display the result of the TSP solution
             if (result == null) {
+                // No solution found, show error message
                 resultText.setText("No solution found");
             } else {
-                resultText.setText(
-                        "Tour: " + result.first +
-                                "\nDistance: " + result.second);
+                // Build the tour string for display
+                StringBuilder tourStr = new StringBuilder();
+                for (int i = 0; i < result.first.size(); i++) {
+                    tourStr.append("City ").append(result.first.get(i) + 1);
+                    if (i < result.first.size() - 1) tourStr.append(" → ");
+                }
+                // Prepare the message with the tour and total distance
+                String message = "Tour:\n" + tourStr +
+                        "\n\nTotal Distance: " + result.second + " km";
+
+                // Show the result in an AlertDialog
+                new androidx.appcompat.app.AlertDialog.Builder(MainActivity.this)
+                        .setTitle("TSP Solution")
+                        .setMessage(message)
+                        .setPositiveButton("OK", null)
+                        .show();
+
+                // Optionally clear the old result text
+                resultText.setText("");
             }
         }
     }
